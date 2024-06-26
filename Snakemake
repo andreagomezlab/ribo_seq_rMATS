@@ -1,0 +1,10 @@
+configfile: "config.yml"
+
+rule process_data:
+    input:
+        config["input_file"]
+    output:
+        "output.txt"
+    conda: "envs/fastqc.yml"
+    shell:
+        "python process_data.py --input {input} --output {output}"
