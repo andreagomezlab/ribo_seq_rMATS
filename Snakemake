@@ -1,7 +1,30 @@
 configfile:
     "config.json"
 
-SAMPLES, = glob_wildcards(config['data']+"/{id}_L001_R1_001.fastq.gz")
+
+rule aggregate_input:
+    output:
+        "ctrl_input.txt"
+    input:
+        expand("{sample}.final.bam", sample=config['data'])
+    shell:
+        """
+        echo {input} > {output}
+        """
+
+
+rule make_summary_table:
+    output:
+        "summary_table.txt",
+    input:
+        aggregate_input,
+    shell:
+        """
+        echo {input} >> {output}
+        echo " " >> {output}
+        """
+
+SAMPLES, = glob_wildcards(config['data']+"/{id}_L004_R1_001_val_1.fq.gz")
 
 rule move:
     input:
@@ -33,7 +56,7 @@ rule mark_duplicates:
     input:
         "{sample}.mapped.bam"
     output:
-        bam = "{sample}.final.bam",
+        bam = "{sample}.final.bam",c
         bai = "{sample}.final.bai",
         metrics = temp("{sample}_dedup_metricx.txt")
     conda:
