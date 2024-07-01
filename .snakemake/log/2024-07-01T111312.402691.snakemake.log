@@ -1,0 +1,3 @@
+WildcardError in line 15 of /media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile:
+No values given for wildcard 'id'.
+  File "/media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile", line 15, in <module>

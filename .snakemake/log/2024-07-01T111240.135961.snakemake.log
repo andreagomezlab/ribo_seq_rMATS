@@ -1,0 +1,5 @@
+ValueError in line 15 of /media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile:
+expected '}' before end of string
+  File "/media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile", line 15, in <module>
+  File "/home/mabraao/.conda/envs/rnaseq_env/lib/python3.10/string.py", line 165, in vformat
+  File "/home/mabraao/.conda/envs/rnaseq_env/lib/python3.10/string.py", line 174, in _vformat

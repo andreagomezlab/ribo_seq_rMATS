@@ -1,0 +1,3 @@
+AttributeError in line 4 of /media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile:
+'dict' object has no attribute 'ctrl'
+  File "/media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile", line 4, in <module>

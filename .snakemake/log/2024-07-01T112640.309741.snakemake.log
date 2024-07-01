@@ -1,0 +1,8 @@
+Building DAG of jobs...
+MissingInputException in line 11 of /media/data01/mabraao/Code/ribo_seq_rMATS/Snakefile:
+Missing input files for rule aggregate_input_ctrl:
+AG2765_S109_L004_R1_001_val_1.fq.gz
+AG2768_S90_L003_R1_001_val_1.fq.gz
+AG2991_S111_L004_R1_001_val_1.fq.gz
+AG2989_S119_L004_R1_001_val_1.fq.gz
+AG2769_S91_L003_R1_001_val_1.fq.gz
