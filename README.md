@@ -4,7 +4,7 @@
 ### 1. Clone repository
 ```shell
 $ git clone https://github.com/andreagomezlab/ribo_seq_rMATS.git
-$ cd ribo_seq_rMATS
+$ cd ribo_seq_rMATS/
 ```
 
 ### 2. Create and activate the conda environment
