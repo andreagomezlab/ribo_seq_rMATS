@@ -38,6 +38,23 @@ rule perform_qc_ctrl:
             fastqc -o {params.out_dir} -f fastq {input.R1} {input.R2}
         '''
 
+rule perform_qc_treat:
+    input:
+        R1 = config['treatement']+"/{sample}_R1_001_val_1.fq.gz",
+        R2 = config['treatement']+"/{sample}_R2_001_val_2.fq.gz"
+    params:
+        out_dir = config['output_dir']+'/qc'
+    output:
+        config['output_dir']+'/qc/{sample}_R1_001_fastqc.html',
+        config['output_dir']+'/qc/{sample}_R1_001_fastqc.zip',
+        config['output_dir']+'/qc/{sample}_R2_001_fastqc.html',
+        config['output_dir']+'/qc/{sample}_R2_001_fastqc.zip'
+    shell:
+        r'''
+            fastqc -o {params.out_dir} -f fastq {input.R1} {input.R2}
+        '''
+
+
 # rule align:
 #     input:
 #         read = config['data']+"/{sample}.fastq.gz", 
