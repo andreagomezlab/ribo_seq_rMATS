@@ -53,6 +53,45 @@ rule perform_qc_treat:
         r'''
             fastqc -o {params.out_dir} -f fastq {input.R1} {input.R2}
         '''
+# https://stackoverflow.com/questions/46066571/accepting-slightly-different-inputs-to-snakemake-rule-fq-vs-fq-gz
+
+def trim_galore_input_determination(wildcards):
+     potential_file_path_list = []
+     # Cycle through both suffix possibilities:
+     for fastqSuffix in [".fq", ".fq.gz"]:
+
+         # Cycle through both read directions
+         for readDirection in ['.1','.2']:
+
+             #Build the list for ech suffix
+             potential_file_path = config["fq_in_path"] + "/" + wildcards.sample + readDirection + fastqSuffix
+
+             #Check if this file actually exists
+             if exists(potential_file_path):
+
+                 #If file is legit, add to list of acceptable files
+                 potential_file_path_list.append(potential_file_path)
+
+     # Checking for an empty list
+     if len(potential_file_path_list):
+         return potential_file_path_list
+     else:
+         return ["trim_galore_input_determination_FAILURE" + wildcards.sample]
+
+rule trim_galore_unzipped_PE:
+    input:
+        unpack(trim_galore_input_determination)
+    output:
+        expand("{trim_out_path}/{{sample}}.{readDirection}.fq.gz",
+            trim_out_path=config["trim_out_path"],
+            readDirection=['1','2'])
+    params:
+        out_path=config['trim_out_path'],
+    conda:
+        'envs/biotools.yaml',
+    shell:
+        'trim_galore --gzip -o {params.out_path} --paired {input}'
+
 
 
 # rule align:
