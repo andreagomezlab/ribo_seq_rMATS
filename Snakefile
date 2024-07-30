@@ -5,13 +5,16 @@ configfile:
 
 QC_FILES=expand(config['output_dir']+"/qc/{sample}_R1_001_fastqc.html", sample=SAMPLES)
 TRIMMED_FQ=expand(config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',sample=SAMPLES)
-TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',sample=SAMPLES))
+TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_2_val_2.fq.gz',sample=SAMPLES))
+BAMS=expand(config['output_dir']+'mapped/bams/{sample}.bam', sample=SAMPLES)
+
 print(TRIMMED_FQ)
 
 rule all:
     input:
         QC_FILES,
-        TRIMMED_FQ 
+        TRIMMED_FQ,
+        BAMS
 
 rule perform_qc:
     input:
@@ -29,12 +32,12 @@ rule perform_qc:
             fastqc -o {params.out_dir} -f fastq {input.R1} {input.R2}
         '''
 
-rule trim_galore:
+rule perform_trim_galore:
     input:
         R1=config['fastq']+'/{sample}_R1_001_val_1.fq.gz',
         R2=config['fastq']+'/{sample}_R2_001_val_2.fq.gz'
     params:
-        out_dir = config['output_dir']+'/trimmed'        
+        out_dir = config['output_dir']+'/trimmed',        
         p = config['nthread']
     output:
         config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',
@@ -44,29 +47,25 @@ rule trim_galore:
             trim_galore --paired --cores {params.p} {input} {output} 
         """
 
-# https://stackoverflow.com/questions/46066571/accepting-slightly-different-inputs-to-snakemake-rule-fq-vs-fq-gz
-
-rule align:
+rule perform_STAR_aligner:
     input:
-        read = config['data']+"/{sample}.fastq.gz", 
-        genome = directory('rnaseq/genome/index/')
+        R1=config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',
+        R2=config['output_dir']+'/trimmed/{sample}_2_val_2.fq.gz',     
+        index=config['star_index']
+    output: config['output_dir']+'mapped/bams/{sample}.bam'
     params:
-        prefix = 'rnaseq/star/{sample}_'
-    output:
-        'rnaseq/star/{sample}_Aligned.sortedByCoord.out.bam',
-        'rnaseq/star/{sample}_Log.final.out'
-    message:
-        'mapping {wildcards.sample} to genome'
+        prefix = config['output_dir']+'mapped/bams/{sample}',
+        unmapped = config['output_dir']+'unmapped/fastq/{sample}',
+        starlogs = config['output_dir']+'mapped/starlogs'
+    threads: config['nthread']
     shell:
-        "mkdir -p {params.outdir}; "
-        "cd {params.outdir}; "
-        "STAR --runThreadN 4 --genomeDir {input.genome} --readFilesIn {input.read} --readFilesCommand gunzip -c --outFileNamePrefix {params.prefix} --outSAMtype BAM SortedByCoordinate --outSAMattributes Standard --alignEndsType EndToEnd"
-
-# rule make_files:
-#     input:
-#         dirs = directory('rnaseq/star')
-#     output:
-#         b1,
-#         b2
-#     script:
-#         "group_files.py"
+        r'''
+        STAR --runThreadN {threads}\
+             --genomeDir {input.index}\
+             --outFileNamePrefix {params.prefix} --readFilesIn {input.R1} {input.R2}\
+             --outSAMtype BAM SortedByCoordinate\
+             --outFilterMatchNmin 50\
+             --outFilterMismatchNmax 100\
+             --readFilesCommand zcat\
+             --outReadsUnmapped {params.unmapped} && mv {params.prefix}Aligned.sortedByCoord.out.bam {output} && mkdir -p {params.starlogs} && mv {params.prefix}Log.final.out {params.prefix}Log.out {params.prefix}Log.progress.out {params.starlogs}
+        '''
