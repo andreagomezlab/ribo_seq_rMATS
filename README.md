@@ -21,7 +21,7 @@ $ snakemake -np
 
 ## Step 2: Configure workflow
 
-Configure the workflow if necessary by editing the file <code>config.json</code>
+Configure the workflow if necessary by editing the file <code>config.json</code> and <code>metadata.cvs</code>
 
 
 ## Step 3: Execute the workflow
