@@ -16,7 +16,7 @@ $ conda activate rnaseq_env
 
 ### 3. Dry run the pipeline workflow
 ```shell
-$ snakemake --np
+$ snakemake -np
 ```
 
 ## Step 2: Configure workflow

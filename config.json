@@ -1,7 +1,7 @@
 {
     "project_title": "PV_48h_DOI",
-    "ctrl": "/media/data02/raw/private_data/test_data/PV_48h_ctrl",
-    "treatement": "/media/data02/raw/private_data/test_data/PV_48h_DOI",
+    "fastq": "/media/data02/raw/private_data/test_data/",
+    "metadata": "/media/data02/raw/private_data/test_data/metadata.csv",   
     "output_dir": "/media/data02/raw/private_data/test_data",
     
     "genome_gtf": "/media/data01/common/ReferenceDB/GRCm39/ncbi/ncbi_dataset/ncbi_dataset/data/GCF_000001635.27/genomic.gtf",
