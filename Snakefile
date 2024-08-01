@@ -7,6 +7,8 @@ QC_FILES=expand(config['output_dir']+"/qc/{sample}_R1_001_fastqc.html", sample=S
 TRIMMED_FQ=expand(config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',sample=SAMPLES)
 TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_2_val_2.fq.gz',sample=SAMPLES))
 BAMS=expand(config['output_dir']+'mapped/bams/{sample}.bam', sample=SAMPLES)
+AS_FILES = expand("rnaseq/rmats2/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS) #rMats output files
+
 
 print(TRIMMED_FQ)
 
@@ -69,3 +71,31 @@ rule perform_STAR_aligner:
              --readFilesCommand zcat\
              --outReadsUnmapped {params.unmapped} && mv {params.prefix}Aligned.sortedByCoord.out.bam {output} && mkdir -p {params.starlogs} && mv {params.prefix}Log.final.out {params.prefix}Log.out {params.prefix}Log.progress.out {params.starlogs}
         '''
+
+rule make_rMATS_input:
+    input:
+        bam = BAMS
+    output:
+        'rnaseq/star/wt.txt',
+        'rnaseq/star/ko.txt'
+    shell:
+        r'''
+        samtools view -h {input.bam} | grep -E 'NH:i:1' | samtools view -b - > {output[0]}
+        samtools view -h {input.bam} | grep -E 'NH:i:2' | samtools view -b - > {output[1]}
+        '''
+
+
+rule run_rMATS:
+    input:
+        b1 = 'rnaseq/star/wt.txt',
+        b2 = 'rnaseq/star/ko.txt',
+        gtf = 'rnaseq/genome/mm.gtf'
+    output:
+        AS_FILES
+    params:
+        outdir = directory('rnaseq/rmats2'),
+        tmp = directory('rnaseq/rmats2/tmp')
+    shell:
+       "mkdir -p {params.outdir}; "
+       "mkdir -p {params.tmp}; "
+       "rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t single --variable-read-length --readLength 100 --libType fr-firststrand --od {params.outdir} --tmp {params.tmp}"
