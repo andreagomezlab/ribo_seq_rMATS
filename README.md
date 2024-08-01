@@ -25,3 +25,8 @@ Configure the workflow if necessary by editing the file <code>config.json</code>
 
 
 ## Step 3: Execute the workflow
+
+```shell
+$ RScripts
+
+```
