@@ -1,11 +1,10 @@
 import os
 
-def make_files(data_path, out1, out2):  
-    files = []
-    substring = "IRS"
+def make_files(metadata, out1, out2):  
+    files = []    
     dictionary = {"ko": [], "wt": []} 
 
-    for file in os.listdir(data_path):
+    for file in os.listdir(metadata):
         if file.endswith("Aligned.sortedByCoord.out.bam"):
             files.append(file)
      

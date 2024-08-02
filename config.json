@@ -1,11 +1,11 @@
 {
     "project_title": "PV_48h_DOI",
-    "fastq": "/media/data02/raw/private_data/test_data",
-    "metadata": "/media/data02/raw/private_data/test_data/metadata.csv",   
-    "output_dir": "/media/data02/raw/private_data/test_data",
+    "fastq": "data/test_data",
+    "metadata": "data/test_data/metadata.csv",   
+    "output_dir": "data/test_data",
     
-    "genome_gtf": "/media/data01/common/ReferenceDB/GRCm39/ncbi/ncbi_dataset/ncbi_dataset/data/GCF_000001635.27/genomic.gtf",
-    "star_index": "/media/data01/common/ReferenceDB/GRCm39/star_index",
+    "genome_gtf": "genome/GCF_000001635.27/genomic.gtf",
+    "star_index": "star_index",
 
     "nthread": 10,
     "readLength": 150,
