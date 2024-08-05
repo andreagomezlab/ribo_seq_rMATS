@@ -9,7 +9,7 @@ $ cd ribo_seq_rMATS/
 ### 2. Create and activate the conda environment
 ```shell
 $ cd env/
-$ conda env create --name envname --file=scrna_env.yml 
+$ conda env create --name envname --file=rnaseq_env.yml 
 $ conda activate rnaseq_env
 ```
 
