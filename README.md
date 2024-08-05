@@ -1,5 +1,10 @@
 
-## Step 1: Install workflow
+
+## Step 1: Install rmats-turbo
+
+Install [rMATs-turbo](https://github.com/Xinglab/rmats-turbo) using conda environment option and inform the enviroment name in <code>config.json</code>  considering the `rMATs_environment` propertie.
+
+## Step 2: Install ribo_seq_rMATS workflow
 
 ### 1. Clone repository
 ```shell
@@ -19,14 +24,15 @@ $ conda activate rnaseq_env
 $ snakemake -np
 ```
 
-## Step 2: Configure workflow
+## Step 3: Configure workflow
 
 Configure the workflow if necessary by editing the file <code>config.json</code> and <code>metadata.cvs</code>
 
 
-## Step 3: Execute the workflow
+## Step 4: Execute the workflow
 
 ```shell
+$ snakemake -c10 --use-conda
 $ RScripts
 
 ```

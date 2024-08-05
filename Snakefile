@@ -1,27 +1,32 @@
 configfile:
     "config.json"
 
-(SAMPLES,) = glob_wildcards(config['fastq']+"/{id}_R1_001_val_1.fq.gz")
+(SAMPLES,) = glob_wildcards(config['fastq']+"/{id}_R1_001.fastq.gz")
 
+EVENTS = ["A3SS", "A5SS", "MXE", "RI", "SE"] #used for rMats output
+JCS = ["JC", "JCEC"] #used for rMats output
+b1 = config['output_dir']+"/rMATs/"+config['project_title']+"/ctrl.txt"
+b2 = config['output_dir']+"/rMATs/"+config['project_title']+"/treat.txt"
 QC_FILES=expand(config['output_dir']+"/qc/{sample}_R1_001_fastqc.html", sample=SAMPLES)
-TRIMMED_FQ=expand(config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',sample=SAMPLES)
-TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_2_val_2.fq.gz',sample=SAMPLES))
-BAMS=expand(config['output_dir']+'mapped/bams/{sample}.bam', sample=SAMPLES)
-AS_FILES = expand("rnaseq/rmats2/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS) #rMats output files
-
-
-print(TRIMMED_FQ)
+TRIMMED_FQ=expand(config['output_dir']+'/trimmed/{sample}_R1_001_val_1.fq.gz',sample=SAMPLES)
+TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz',sample=SAMPLES))
+BAMS=expand(config['output_dir']+'/mapped/bams/{sample}.bam', sample=SAMPLES)
+print(BAMS)
+AS_FILES = expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS) #rMats output files
 
 rule all:
     input:
         QC_FILES,
         TRIMMED_FQ,
-        BAMS
+        BAMS,
+       	b1,
+        b2,
+        AS_FILES
 
 rule perform_qc:
     input:
-        R1=config['fastq']+'/{sample}_R1_001_val_1.fq.gz',
-        R2=config['fastq']+'/{sample}_R2_001_val_2.fq.gz'
+        R1=config['fastq']+'/{sample}_R1_001.fastq.gz',
+        R2=config['fastq']+'/{sample}_R2_001.fastq.gz'
     params:
         out_dir = config['output_dir']+'/qc'
     output:
@@ -36,30 +41,31 @@ rule perform_qc:
 
 rule perform_trim_galore:
     input:
-        R1=config['fastq']+'/{sample}_R1_001_val_1.fq.gz',
-        R2=config['fastq']+'/{sample}_R2_001_val_2.fq.gz'
+        R1=config['fastq']+'/{sample}_R1_001.fastq.gz',
+        R2=config['fastq']+'/{sample}_R2_001.fastq.gz'
     params:
-        out_dir = config['output_dir']+'/trimmed',        
-        p = config['nthread']
+        out_dir = config['output_dir']+'/trimmed'                
     output:
-        config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',
-        config['output_dir']+'/trimmed/{sample}_2_val_2.fq.gz'        
+        config['output_dir']+'/trimmed/{sample}_R1_001_val_1.fq.gz',                    
+        config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz'        
     shell:
         r"""
-            trim_galore --paired --cores {params.p} {input} {output} 
+            trim_galore --paired --phred33 --cores 8 {input.R1} {input.R2} -o {params.out_dir} 
         """
 
 rule perform_STAR_aligner:
     input:
-        R1=config['output_dir']+'/trimmed/{sample}_1_val_1.fq.gz',
-        R2=config['output_dir']+'/trimmed/{sample}_2_val_2.fq.gz',     
+        R1=config['output_dir']+'/trimmed/{sample}_R1_001_val_1.fq.gz',
+        R2=config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz',     
         index=config['star_index']
-    output: config['output_dir']+'mapped/bams/{sample}.bam'
+    output: 
+        config['output_dir']+'/mapped/bams/{sample}.bam'
     params:
-        prefix = config['output_dir']+'mapped/bams/{sample}',
-        unmapped = config['output_dir']+'unmapped/fastq/{sample}',
-        starlogs = config['output_dir']+'mapped/starlogs'
-    threads: config['nthread']
+        prefix = config['output_dir']+'/mapped/bams/{sample}',
+        unmapped = config['output_dir']+'/unmapped/fastq/{sample}',
+        starlogs = config['output_dir']+'/mapped/starlogs'
+    threads: 
+        config['nthread']
     shell:
         r'''
         STAR --runThreadN {threads}\
@@ -72,30 +78,32 @@ rule perform_STAR_aligner:
              --outReadsUnmapped {params.unmapped} && mv {params.prefix}Aligned.sortedByCoord.out.bam {output} && mkdir -p {params.starlogs} && mv {params.prefix}Log.final.out {params.prefix}Log.out {params.prefix}Log.progress.out {params.starlogs}
         '''
 
-rule make_rMATS_input:
-    input:
-        bam = BAMS
+rule make_files:
+    input:        
+        metadata = config['metadata']
     output:
-        'rnaseq/star/wt.txt',
-        'rnaseq/star/ko.txt'
-    shell:
-        r'''
-        samtools view -h {input.bam} | grep -E 'NH:i:1' | samtools view -b - > {output[0]}
-        samtools view -h {input.bam} | grep -E 'NH:i:2' | samtools view -b - > {output[1]}
-        '''
+        b1,
+        b2
+    script:
+        "scripts/group_input_rMATs.py"
 
 
 rule run_rMATS:
     input:
-        b1 = 'rnaseq/star/wt.txt',
-        b2 = 'rnaseq/star/ko.txt',
-        gtf = 'rnaseq/genome/mm.gtf'
+        b1 = config['output_dir']+"/rMATs/"+config['project_title']+"/ctrl.txt",
+        b2 = config['output_dir']+"/rMATs/"+config['project_title']+"/treat.txt",
+        gtf = config['genome_gtf']
     output:
         AS_FILES
     params:
-        outdir = directory('rnaseq/rmats2'),
-        tmp = directory('rnaseq/rmats2/tmp')
-    shell:
-       "mkdir -p {params.outdir}; "
+        outdir = config['output_dir']+"/rMATs/"+config['project_title'],
+        tmp = config['output_dir']+"/rMATs/"+config['project_title']+"/tmp",
+        readTy = config['readType'],
+        readLen = config['readLength'],
+        novel = config['novel'],
+        nt = config['nthread']
+    conda:
+        confif['rmats_env']
+    shell:       
        "mkdir -p {params.tmp}; "
-       "rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t single --variable-read-length --readLength 100 --libType fr-firststrand --od {params.outdir} --tmp {params.tmp}"
+       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --{params.novel} --od {params.outdir} --tmp {params.tmp}"

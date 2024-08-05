@@ -1,25 +1,24 @@
 import os
+import pandas as pd
 
-def make_files(metadata, out1, out2):  
-    files = []    
-    dictionary = {"ko": [], "wt": []} 
+def make_files(metadata, out1, out2):      
+    meta = pd.read_csv(metadata, sep=',', header=None)
+    print(meta)
+    dictionary = {"ctrl": [], "treat": []} 
 
-    for file in os.listdir(metadata):
-        if file.endswith("Aligned.sortedByCoord.out.bam"):
-            files.append(file)
-     
-    for file in files:
-        if substring in file:  
-            dictionary["ko"].append(file)  
+    for index, row in meta.iterrows():
+        print(row)
+        if row[1] == "ctrl":
+            dictionary["ctrl"].append(row[0]+".bam")
         else:
-            dictionary["wt"].append(file) 
+            dictionary["treat"].append(row[0]+".bam")
+
+    print(dictionary)
 
     for key, value in dictionary.items():
-        with open (out2 if key == "wt" else out1, 'w') as f:
+        with open (out2 if key == "ctrl" else out1, 'w') as f:
                 f.write(','.join(value)) 
                 f.close
 
 make_files(snakemake.input[0], snakemake.output[0], snakemake.output[1])
 
-#in the rule that executes the script, I will define the folder with bam files as the input, 
-# and final output files as two outputs

@@ -1,11 +1,12 @@
 {
     "project_title": "PV_48h_DOI",
     "fastq": "data/test_data",
-    "metadata": "data/test_data/metadata.csv",   
+    "metadata": "metadata.csv",   
     "output_dir": "data/test_data",
     
     "genome_gtf": "genome/GCF_000001635.27/genomic.gtf",
     "star_index": "star_index",
+    "rMATs_environment": "base",
 
     "nthread": 10,
     "readLength": 150,
