@@ -79,7 +79,8 @@ rule perform_STAR_aligner:
         '''
 
 rule make_files:
-    input:        
+    input:                
+        bam_path = config['output_dir'] +'/mapped/bams/',
         metadata = config['metadata']
     output:
         b1,
@@ -103,7 +104,7 @@ rule run_rMATS:
         novel = config['novel'],
         nt = config['nthread']
     conda:
-        confif['rmats_env']
+        config['rMATs_environment']
     shell:       
        "mkdir -p {params.tmp}; "
        "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --{params.novel} --od {params.outdir} --tmp {params.tmp}"
