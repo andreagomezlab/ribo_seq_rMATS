@@ -1,0 +1,15 @@
+configfile:
+    "config_sashimi.yml"
+
+rule prepare_input:
+    input:        
+        F2=config['fastq']+'/{sample}_1.fq.gz'
+    params:
+        out_dir = config['output_dir']+'/merged'
+    output:
+        config['output_dir']+'/merged/{sample}_merged_2.fastq.gz'
+    shell :
+        r'''
+            cat {input.F1} {input.F2} > {output}
+        '''    
+

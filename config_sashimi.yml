@@ -2,12 +2,25 @@
 # from the rMATS output file
 cell_type: PV
 timepoint: 48hrs
+l1: Ctrl_48h # label for the control group
+l2: DOI_48h  # label for the treatment group
+exon_s: 1
+intron_s: 5
+min_counts: 1
+event_type: SE
+output_dir: /apps/rmats-turbo/
+events_dir: /apps/rmats-turbo/PV_48_DOI_output_novel/
+
 # Find the gene name and rMATS event ID in the rMATS output file# 
-gene_name: Neil1
-rMATS_event_id: 21617
+gene_name: Gria3
+rMATS_event_id: 416
+
 
 # The path to the rMATS output file
-path_output: /home/manager/ribo_seq_rMATS/rMATS_output/ribo_seq_rMATS_output.txt
-S1: bams_Rbp4_48_CTRL.txt
-S2: bams_Rbp4_48_DOI.txt
+bam_path: /apps/rmats-turbo/
+S1: bams_PV_48_CTRL.txt
+S2: bams_PV_48_DOI.txt
+
+path_rmats2sashimiplot: /apps/rmats2sashimiplot/
+
 
