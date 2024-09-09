@@ -23,6 +23,32 @@ rule all:
         b2,
         AS_FILES
 
+rule merge_files_R1:
+    input:
+        F1=config['fastq']+'/{sample}_R1_001.fastq.gz',
+        F2=config['fastq']+'/{sample}_1.fq.gz'
+    params:
+        out_dir = config['output_dir']+'/merged'
+    output:
+        config['output_dir']+'/merged/{sample}_merged_2.fastq.gz'
+    shell :
+        r'''
+            cat {input.F1} {input.F2} > {output}
+        '''    
+
+rule merge_files_R2:
+    input:
+        F1=config['fastq']+'/{sample}_R2_001.fastq.gz',
+        F2=config['fastq']+'/{sample}_2.fq.gz'
+    params:
+        out_dir = config['output_dir']+'/merged'
+    output:
+        config['output_dir']+'/merged/{sample}_merged_2.fastq.gz'
+    shell :
+        r'''
+            cat {input.F1} {input.F2} > {output}
+        '''    
+
 rule perform_qc:
     input:
         R1=config['fastq']+'/{sample}_R1_001.fastq.gz',
@@ -108,3 +134,6 @@ rule run_rMATS:
     shell:       
        "mkdir -p {params.tmp}; "
        "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --{params.novel} --od {params.outdir} --tmp {params.tmp}"
+
+
+

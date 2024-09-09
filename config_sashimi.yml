@@ -1,0 +1,13 @@
+# Description: This file contains the configuration for the sashimi plot
+# from the rMATS output file
+cell_type: PV
+timepoint: 48hrs
+# Find the gene name and rMATS event ID in the rMATS output file# 
+gene_name: Neil1
+rMATS_event_id: 21617
+
+# The path to the rMATS output file
+path_output: /home/manager/ribo_seq_rMATS/rMATS_output/ribo_seq_rMATS_output.txt
+S1: bams_Rbp4_48_CTRL.txt
+S2: bams_Rbp4_48_DOI.txt
+

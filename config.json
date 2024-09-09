@@ -11,7 +11,13 @@
     "nthread": 10,
     "readLength": 150,
     "readType": "paired",
-    "novel": "novelSS"    
+    "novel": "novelSS",
+
+    "IVG": "/apps/IGV_Linux_2.16.0/igv.sh",
+    "tmp_BAMs" : "/apps/rmats-turbo/",
+    "PV_IGV_session": "/apps/rmats-turbo/PV_48_DOI_output_novel/PV_48hrs_igv_session.xml"
+
+    
 }
 
 
