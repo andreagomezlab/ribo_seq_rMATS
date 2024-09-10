@@ -18,9 +18,13 @@ rMATS_event_id: 416
 
 # The path to the rMATS output file
 bam_path: /apps/rmats-turbo/
+
 S1: bams_PV_48_CTRL.txt
 S2: bams_PV_48_DOI.txt
-
+group_info: grouping.gf
+# example indices
+# group1name: 1-5
+# group2name: 6-10
 path_rmats2sashimiplot: /apps/rmats2sashimiplot/
 
 

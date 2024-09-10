@@ -1,15 +1,30 @@
 configfile:
     "config_sashimi.yml"
 
+
+
 rule prepare_input:
     input:        
-        F2=config['fastq']+'/{sample}_1.fq.gz'
+        file=config_sashimi['events_dir']+'/SE.MATS.JC.txt'
     params:
-        out_dir = config['output_dir']+'/merged'
+        GENE:config_sashimi['gene_name'],
+        ID:config_sashimi['rMATS_event_id']
     output:
-        config['output_dir']+'/merged/{sample}_merged_2.fastq.gz'
+        config_sashimi['events_dir']+'/Sashimi_plot'
     shell :
-        r'''
-            cat {input.F1} {input.F2} > {output}
+        '''
+        cat {params.OUT} | head -1 > {output}/{GENE}_{ID}_SE.MATS.JC.txt
+        grep {GENE} {file} | grep {ID} >> {output}/{GENE}_{ID}_SE.MATS.JC.txt
+        
         '''    
 
+rule run_sashimi:
+    input:
+        config_sashimi['events_dir']+'/Sashimi_plot/{GENE}_{ID}_SE.MATS.JC.txt'
+    output:
+        config_sashimi['events_dir']+'/Sashimi_plot/{GENE}_{ID}_SE.MATS.JC.pdf'
+    shell:
+        '''
+        rmats2sashimiplot --b1 $S1 --b2 $S2 --event-type SE -e ${OUT}/${GENE}_${ID}_SE.MATS.JC.txt --l1 Ctrl_48h --l2 DOI_48h --exon_s 1 --intron_s 5 --min-counts 1 -o $OUT
+        
+        '''
