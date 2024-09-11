@@ -8,7 +8,6 @@ exon_s: 1
 intron_s: 5
 min_counts: 1
 event_type: SE
-output_dir: /apps/rmats-turbo/
 events_dir: /apps/rmats-turbo/PV_48_DOI_output_novel/
 
 # Find the gene name and rMATS event ID in the rMATS output file# 
@@ -19,8 +18,8 @@ rMATS_event_id: 416
 # The path to the rMATS output file
 bam_path: /apps/rmats-turbo/
 
-S1: bams_PV_48_CTRL.txt
-S2: bams_PV_48_DOI.txt
+S1_name: bams_PV_48_CTRL.txt
+S2_name: bams_PV_48_DOI.txt
 group_info: grouping.gf
 # example indices
 # group1name: 1-5
