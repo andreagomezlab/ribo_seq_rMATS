@@ -10,6 +10,8 @@
 
     "nthread": 10,
     "readLength": 150,
+    "clipping": "--allow-clipping",
+    "var_length": "--variable-read-length",
     "readType": "paired",
     "novel": "novelSS",
 
