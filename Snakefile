@@ -85,7 +85,7 @@ rule perform_STAR_aligner:
         R2=config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz',     
         index=config['star_index']
     output: 
-        config['output_dir']+'/mapped/bams/{sample}.bam'
+        config['output_dir']+'/mapped/bams/{sample}.bam'        
     params:
         prefix = config['output_dir']+'/mapped/bams/{sample}',
         unmapped = config['output_dir']+'/unmapped/fastq/{sample}',
@@ -104,9 +104,21 @@ rule perform_STAR_aligner:
              --outReadsUnmapped {params.unmapped} && mv {params.prefix}Aligned.sortedByCoord.out.bam {output} && mkdir -p {params.starlogs} && mv {params.prefix}Log.final.out {params.prefix}Log.out {params.prefix}Log.progress.out {params.starlogs}
         '''
 
+rule list_BAMS:
+    input:
+        expand(config['output_dir']+'/mapped/bams/{sample}.bam', sample=SAMPLES)
+    output:
+        config['output_dir']+'/mapped/bams/bamlist.txt'
+    shell:       
+       "ls {input} > {output} "
+    
+
+
 rule make_files:
-    input:                
-        bam_path = config['output_dir'] +'/mapped/bams/',
+    input:
+        list_bam = config['output_dir']+'/mapped/bams/bamlist.txt',        
+    params:
+        bam_files = config['output_dir'] +'/mapped/bams/',
         metadata = config['metadata']
     output:
         b1,
@@ -133,7 +145,7 @@ rule run_rMATS:
         config['rMATs_environment']
     shell:       
        "mkdir -p {params.tmp}; "
-       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --{params.novel} --od {params.outdir} --tmp {params.tmp}"
+       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp}"
 
 
 

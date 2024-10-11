@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-def make_files(bam_path, metadata, out1, out2):      
+def make_files(bam_path, metadata, out1, out2):    
     meta = pd.read_csv(metadata, sep=',', header=None)
     print(meta)
     dictionary = {"ctrl": [], "treat": []} 
@@ -20,5 +20,5 @@ def make_files(bam_path, metadata, out1, out2):
                 f.write(','.join(value)) 
                 f.close
 
-make_files(snakemake.input[0], snakemake.input[1], snakemake.output[0], snakemake.output[1])
+make_files(snakemake.params[0], snakemake.params[1], snakemake.output[0], snakemake.output[1])
 
