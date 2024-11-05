@@ -1,14 +1,14 @@
 {
-    "project_title": "PV_48h_Psilo_rMATS",
-    "fastq": "/media/data01/gomezlab/tmp_bkp/1735-2728-09242024_140206/PV_48h",
+    "project_title": "Cux2_48h_Psilo_rMATS",
+    "fastq": "/media/data01/gomezlab/tmp_bkp/1735-2728-09242024_140206/Cux2_48h",
     "metadata": "metadata.csv",   
-    "output_dir": "/media/data01/gomezlab/tmp_bkp/1735-2728-09242024_140206/PV_48h/processed",
+    "output_dir": "/media/data01/gomezlab/tmp_bkp/1735-2728-09242024_140206/Cux2_48h/processed",
         
     "genome_gtf": "/media/data01/mabraao/Code/ribo_seq_rMATS/genome/GCF_000001635.27/genomic.gtf",
     "star_index": "/media/data01/mabraao/Code/ribo_seq_rMATS/star_index",
     "rMATs_environment": "base",
 
-    "nthread": 10,
+    "nthread": 6,
     "readLength": 150,
     "clipping": "--allow-clipping",
     "var_length": "--variable-read-length",
@@ -18,6 +18,7 @@
     
     "IVG": "/apps/IGV_Linux_2.16.0/igv.sh",
     "tmp_BAMs" : "/apps/rmats-turbo/",
+    "VERSION" : "v4.3.0",
     "PV_IGV_session": "/apps/rmats-turbo/PV_48_DOI_output_novel/PV_48hrs_igv_session.xml"    
 }
 
