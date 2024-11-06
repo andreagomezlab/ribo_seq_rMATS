@@ -76,7 +76,7 @@ rule perform_trim_galore:
         config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz'        
     shell:
         r"""
-            trim_galore --paired --phred33 --cores 8 {input.R1} {input.R2} -o {params.out_dir} 
+            trim_galore --paired --phred33 --fastqc --cores 6 {input.R1} {input.R2} -o {params.out_dir} 
         """
 
 rule perform_STAR_aligner:
@@ -112,8 +112,6 @@ rule list_BAMS:
     shell:       
        "ls {input} > {output} "
     
-
-
 rule make_files:
     input:
         list_bam = config['output_dir']+'/mapped/bams/bamlist.txt',        
@@ -127,7 +125,7 @@ rule make_files:
         "scripts/group_input_rMATs.py"
 
 
-rule run_rMATS:
+rule run_rMATS_statoff:
     input:
         b1 = config['output_dir']+"/rMATs/"+config['project_title']+"/ctrl.txt",
         b2 = config['output_dir']+"/rMATs/"+config['project_title']+"/treat.txt",
@@ -145,7 +143,48 @@ rule run_rMATS:
         config['rMATs_environment']
     shell:       
        "mkdir -p {params.tmp}; "
-       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp}"
+       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --individual-counts --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp} --statoff"
 
+
+
+
+
+
+# rule run_Combat:
+#     input:
+
+#     output:
+
+#     script:
+#         "scripts/run_Combat.py"
+
+
+
+
+# rule prepare_stat_inputs:
+#     input:
+#         new_output_dir = config['output_dir']+"/rMATs/"+config['project_title'],
+#         old_output_dir = config['output_dir']+"/rMATs/"+config['project_title'],
+#         group_1_indices = config['metadata']['group_1_indices'],
+#         group_2_indices = config['metadata']['group_2_indices']
+#     output:
+#         b1,
+#         b2
+#     script:
+#         "scripts/prepare_stat_inputs.py"
+
+# rule run_rMATS_stat:
+#     input:
+#         idir = config['output_dir']+"/rMATs/"+config['project_title'],
+#     output:
+#         AS_FILES
+#     shell: 
+#         r'''
+#         python /apps/rmats-turbo/rmats.py --od /path/to/dir_with_existing_files --tmp /path/to/tmp_dir --task stat
+#        '''
+
+
+
+    
 
 

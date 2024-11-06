@@ -16,7 +16,7 @@ def make_files(bam_path, metadata, out1, out2):
     print(dictionary)
 
     for key, value in dictionary.items():
-        with open (out2 if key == "ctrl" else out1, 'w') as f:
+        with open (out1 if key == "ctrl" else out2, 'w') as f:
                 f.write(','.join(value)) 
                 f.close
 
