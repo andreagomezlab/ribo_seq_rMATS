@@ -12,7 +12,8 @@ TRIMMED_FQ=expand(config['output_dir']+'/trimmed/{sample}_R1_001_val_1.fq.gz',sa
 TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz',sample=SAMPLES))
 BAMS=expand(config['output_dir']+'/mapped/bams/{sample}.bam', sample=SAMPLES)
 print(BAMS)
-AS_FILES = expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS) #rMats output files
+AS_FILES_RAW = expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{jc}.raw.input.{event}.txt", event = EVENTS, jc = JCS) #rMats raw count files
+AS_FILES = (expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS)) #rMats output files
 
 rule all:
     input:
@@ -21,7 +22,8 @@ rule all:
         BAMS,
        	b1,
         b2,
-        AS_FILES
+        AS_FILES_RAW,
+        AS_FILES    
 
 rule merge_files_R1:
     input:
@@ -131,7 +133,7 @@ rule run_rMATS_statoff:
         b2 = config['output_dir']+"/rMATs/"+config['project_title']+"/treat.txt",
         gtf = config['genome_gtf']
     output:
-        AS_FILES
+        AS_FILES_RAW
     params:
         outdir = config['output_dir']+"/rMATs/"+config['project_title'],
         tmp = config['output_dir']+"/rMATs/"+config['project_title']+"/tmp",
@@ -146,45 +148,15 @@ rule run_rMATS_statoff:
        "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --individual-counts --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp} --statoff"
 
 
+rule run_rMATS_stat:
+    output:
+        AS_FILES
+    params:
+        outdir = config['output_dir']+"/rMATs/"+config['project_title'],
+        tmp = config['output_dir']+"/rMATs/"+config['project_title']+"/tmp"    
+    shell:
+        "python /apps/rmats-turbo/rmats.py --od {params.outdir} --tmp {params.tmp} --task stat"
 
-
-
-
-# rule run_Combat:
-#     input:
-
-#     output:
-
-#     script:
-#         "scripts/run_Combat.py"
-
-
-
-
-# rule prepare_stat_inputs:
-#     input:
-#         new_output_dir = config['output_dir']+"/rMATs/"+config['project_title'],
-#         old_output_dir = config['output_dir']+"/rMATs/"+config['project_title'],
-#         group_1_indices = config['metadata']['group_1_indices'],
-#         group_2_indices = config['metadata']['group_2_indices']
-#     output:
-#         b1,
-#         b2
-#     script:
-#         "scripts/prepare_stat_inputs.py"
-
-# rule run_rMATS_stat:
-#     input:
-#         idir = config['output_dir']+"/rMATs/"+config['project_title'],
-#     output:
-#         AS_FILES
-#     shell: 
-#         r'''
-#         python /apps/rmats-turbo/rmats.py --od /path/to/dir_with_existing_files --tmp /path/to/tmp_dir --task stat
-#        '''
-
-
-
-    
+  
 
 
