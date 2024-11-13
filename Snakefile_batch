@@ -12,7 +12,8 @@ TRIMMED_FQ=expand(config['output_dir']+'/trimmed/{sample}_R1_001_val_1.fq.gz',sa
 TRIMMED_FQ.append(expand(config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz',sample=SAMPLES))
 BAMS=expand(config['output_dir']+'/mapped/bams/{sample}.bam', sample=SAMPLES)
 print(BAMS)
-AS_FILES = expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS) #rMats output files
+AS_FILES_RAW = expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{jc}.raw.input.{event}.txt", event = EVENTS, jc = JCS) #rMats raw count files
+AS_FILES = (expand(config['output_dir']+"/rMATs/"+config['project_title']+"/{event}.MATS.{jc}.txt", event = EVENTS, jc = JCS)) #rMats output files
 
 rule all:
     input:
@@ -21,7 +22,8 @@ rule all:
         BAMS,
        	b1,
         b2,
-        AS_FILES
+        AS_FILES_RAW,
+        AS_FILES    
 
 rule merge_files_R1:
     input:
@@ -76,7 +78,7 @@ rule perform_trim_galore:
         config['output_dir']+'/trimmed/{sample}_R2_001_val_2.fq.gz'        
     shell:
         r"""
-            trim_galore --paired --phred33 --cores 8 {input.R1} {input.R2} -o {params.out_dir} 
+            trim_galore --paired --phred33 --fastqc --cores 6 {input.R1} {input.R2} -o {params.out_dir} 
         """
 
 rule perform_STAR_aligner:
@@ -112,8 +114,6 @@ rule list_BAMS:
     shell:       
        "ls {input} > {output} "
     
-
-
 rule make_files:
     input:
         list_bam = config['output_dir']+'/mapped/bams/bamlist.txt',        
@@ -127,13 +127,13 @@ rule make_files:
         "scripts/group_input_rMATs.py"
 
 
-rule run_rMATS:
+rule run_rMATS_statoff:
     input:
         b1 = config['output_dir']+"/rMATs/"+config['project_title']+"/ctrl.txt",
         b2 = config['output_dir']+"/rMATs/"+config['project_title']+"/treat.txt",
         gtf = config['genome_gtf']
     output:
-        AS_FILES
+        AS_FILES_RAW
     params:
         outdir = config['output_dir']+"/rMATs/"+config['project_title'],
         tmp = config['output_dir']+"/rMATs/"+config['project_title']+"/tmp",
@@ -145,7 +145,18 @@ rule run_rMATS:
         config['rMATs_environment']
     shell:       
        "mkdir -p {params.tmp}; "
-       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp}"
+       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --individual-counts --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp} --statoff"
 
+
+rule run_rMATS_stat:
+    output:
+        AS_FILES
+    params:
+        outdir = config['output_dir']+"/rMATs/"+config['project_title'],
+        tmp = config['output_dir']+"/rMATs/"+config['project_title']+"/tmp"    
+    shell:
+        "python /apps/rmats-turbo/rmats.py --od {params.outdir} --tmp {params.tmp} --task stat"
+
+  
 
 

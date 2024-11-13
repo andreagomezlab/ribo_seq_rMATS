@@ -1,8 +1,8 @@
 {
-    "project_title": "Cux2_1month_DOI_rMATS",
-    "fastq": "/media/data02/raw/private_data/RNA-Seq/H202SC23053594/FASTQ/Cux2_1month_DOI/",
+    "project_title": "PV_1month_DOI_rMATS",
+    "fastq": "/media/data02/raw/private_data/RNA-Seq/H202SC23053594/FASTQ/PV_1month_DOI/",
     "metadata": "metadata.csv",   
-    "output_dir": "/media/data01/gomezlab/tmp_bkp/1735-2728-09242024_140206/Cux2_1month_DOI/processed",
+    "output_dir": "/media/data01/gomezlab/tmp_bkp/1735-2728-09242024_140206/PV_1month_DOI/processed",
         
     "genome_gtf": "/media/data01/mabraao/Code/ribo_seq_rMATS/genome/GCF_000001635.27/genomic.gtf",
     "star_index": "/media/data01/mabraao/Code/ribo_seq_rMATS/star_index",
