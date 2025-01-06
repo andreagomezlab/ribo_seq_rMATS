@@ -145,7 +145,7 @@ rule run_rMATS_statoff:
         config['rMATs_environment']
     shell:       
        "mkdir -p {params.tmp}; "
-       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --individual-counts --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp} --statoff"
+       "python /apps/rmats-turbo/rmats.py --b1 {input.b1} --b2 {input.b2} --gtf {input.gtf} -t {params.readTy} --readLength {params.readLen} --nthread {params.nt} --variable-read-length --allow-clipping --od {params.outdir} --tmp {params.tmp} --statoff"
 
 
 rule run_rMATS_stat:
